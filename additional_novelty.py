@@ -34,8 +34,8 @@ warnings.filterwarnings("ignore")
 # =====================================================================
 #  CONFIG
 # =====================================================================
-# Tumhara dataset path (jahan parquet/zip rakhe hain)
-DATA_ROOT = r"D:\SVNIT\M.tech\3rd sem\odd sem\archive"
+# Set CICDDOS_DATA_ROOT to the folder containing the CICDDoS2019 dataset.
+DATA_ROOT = os.getenv("CICDDOS_DATA_ROOT", "")
 
 # Maximum number of rows to load per file (memory bachane ke liye)
 MAX_ROWS_PER_FILE = 200_000
@@ -212,9 +212,14 @@ def train_and_eval(name, model, Xtr, ytr, Xte, yte):
 
 
 def main():
-    root = Path(DATA_ROOT)
+    if not DATA_ROOT:
+        raise EnvironmentError(
+            "CICDDOS_DATA_ROOT is not set. Point it to the folder containing "
+            "your CICDDoS2019 CSV/Parquet files."
+        )
+    root = Path(DATA_ROOT).expanduser().resolve()
     if not root.exists():
-        raise FileNotFoundError(f"DATA_ROOT does not exist: {root}")
+        raise FileNotFoundError(f"CICDDOS_DATA_ROOT does not exist: {root}")
 
     print(f"[i] Using DATA_ROOT = {root}")
 
