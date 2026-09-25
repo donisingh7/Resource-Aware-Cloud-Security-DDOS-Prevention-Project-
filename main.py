@@ -9,7 +9,7 @@ CICDDoS2019 – Base ML models + Feature-Reduction Advancement (Option 2)
     retrain models, compare accuracy + timing (full vs reduced features).
 
 Run:
-    python ddos_cicddos2019_option2.py
+    CICDDOS_DATA_ROOT=/path/to/dataset python main.py
 """
 
 import os
@@ -31,9 +31,10 @@ warnings.filterwarnings("ignore")
 
 
 # =====================================================================
-#  CONFIG: change this IF your folder path is different
+#  CONFIG
 # =====================================================================
-DATA_ROOT = r"D:\SVNIT\M.tech\3rd sem\odd sem\archive"
+# Set CICDDOS_DATA_ROOT to the folder containing CICDDoS2019 CSV/Parquet files.
+DATA_ROOT = os.getenv("CICDDOS_DATA_ROOT", "")
 
 # Maximum number of rows to load per file (to avoid RAM crash)
 MAX_ROWS_PER_FILE = 200_000
@@ -210,9 +211,14 @@ def train_and_eval(name, model, Xtr, ytr, Xte, yte):
 
 
 def main():
-    root = Path(DATA_ROOT)
+    if not DATA_ROOT:
+        raise EnvironmentError(
+            "CICDDOS_DATA_ROOT is not set. Point it to the folder containing "
+            "your CICDDoS2019 CSV/Parquet files."
+        )
+    root = Path(DATA_ROOT).expanduser().resolve()
     if not root.exists():
-        raise FileNotFoundError(f"DATA_ROOT does not exist: {root}")
+        raise FileNotFoundError(f"CICDDOS_DATA_ROOT does not exist: {root}")
 
     print(f"[i] Using DATA_ROOT = {root}")
 
