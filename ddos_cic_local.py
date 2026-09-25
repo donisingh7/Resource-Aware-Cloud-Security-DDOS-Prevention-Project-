@@ -7,7 +7,7 @@ CICDDoS2019 local baseline + feature-reduction experiment.
 - Uses RF feature importances to select Top-K features and retrains models.
 - Prints accuracy, F1, training time, inference time.
 
-Author: Doni + ChatGPT helper :)
+Author: Doni Singh Agrawal
 """
 
 import os
@@ -28,8 +28,9 @@ from sklearn.metrics import accuracy_score, f1_score
 warnings.filterwarnings("ignore")
 
 
-# ==== CONFIGURE HERE (your local path) =====================
-BASE_DIR = r"D:\SVNIT\M.tech\3rd sem\odd sem\archive"
+# ==== CONFIGURATION ========================================
+# Set CICDDOS_DATA_ROOT to the folder containing cleaned CICDDoS2019 parquet files.
+BASE_DIR = os.getenv("CICDDOS_DATA_ROOT", "")
 MAX_ROWS = 300_000          # max rows to keep (to control RAM/time)
 TOP_K_FEATURES = 20         # RF top-K features for Option 2
 # ==========================================================
@@ -173,6 +174,11 @@ def train_and_eval(name, model, Xtr, ytr, Xte, yte, setting):
 
 def main():
     # 1) Load dataset
+    if not BASE_DIR:
+        raise EnvironmentError(
+            "CICDDOS_DATA_ROOT is not set. Point it to the folder containing "
+            "your cleaned CICDDoS2019 parquet files."
+        )
     print(f"Loading parquet files from: {BASE_DIR}")
     df = load_parquet_folder(BASE_DIR)
 
